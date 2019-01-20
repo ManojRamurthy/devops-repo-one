@@ -1,0 +1,55 @@
+class package_installation {
+
+case $::osfamily {
+        'RedHat': {
+           $pkgname = [ 'httpd' ]
+           $servicename = [ 'httpd' ]
+           $usrname = [ 'httpduser' ]
+           $grpname = [ 'httpgrp' ]
+        }
+        'Debian': {
+           $pkgname = [ 'apache' ]
+           $servicename = [ 'apache' ]
+           $usrname = [ 'apacheuser' ]
+           $grpname = [ 'apachepgrp' ]
+        }
+          
+    }
+
+
+
+
+       group { $grpname:
+         ensure => 'present',
+             }
+
+      user { $usrname:
+        ensure             => 'present',
+        comment            => 'root',
+        groups             => [ $grpname ],
+        home               => "/home/$usrname",
+        password           => '!!',
+        password_max_age   => 99999,
+        password_min_age   => 0,
+        password_warn_days => 7,
+        shell              => '/bin/bash',
+        uid                => 9981,
+       }
+
+
+       package { $pkgname:
+         ensure => present,
+	}
+
+       service { $servicename:
+         ensure => 'running',
+         enable => 'true',
+}
+
+
+
+
+
+}
+
+include package_installation
